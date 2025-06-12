@@ -3,7 +3,7 @@
 var onOutsideClickFunctions = {};
 
 window.blazoredTypeahead = {
-    assemblyname: "Blazored.Typeahead",
+    assemblyname: "Typeahead",
     setFocus: function (element) {
         if (element && element.focus) element.focus();
     },
