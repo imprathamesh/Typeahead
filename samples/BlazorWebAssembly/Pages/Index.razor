@@ -1,0 +1,315 @@
+﻿@page "/"
+
+<h1>Blazored Typeahead - Form</h1>
+<ul class="dropdown-menu">
+    <li><span class="dropdown-item-text">Dropdown item text</span></li>
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><a class="dropdown-item" href="#">Something else here</a></li>
+</ul>
+<EditForm Model="_formModel" OnValidSubmit="HandleFormSubmit">
+    <DataAnnotationsValidator />
+
+    <BlazoredTypeahead SearchMethod="GetPeopleLocal"
+                       @bind-Value="_formModel.SelectedPerson"
+                       EnableDropDown="true"
+                       MinimumLength="3"
+                       placeholder="Search by first name..."
+                       @ref="_localBlazoredTypeahead">
+        <SelectedTemplate Context="person">
+            @person.Firstname
+        </SelectedTemplate>
+        <ResultTemplate Context="person">
+            @person.Firstname @person.Lastname
+        </ResultTemplate>
+        <HelpTemplate>
+            Please enter at least 3 character to perform a search.
+        </HelpTemplate>
+    </BlazoredTypeahead>
+    <ValidationMessage For="@(() => _formModel.SelectedPerson)" />
+
+    <button class="btn btn-primary" type="submit" style="margin-top: 20px;">Submit</button>
+    <button class="btn btn-info" type="button" style="margin-top: 20px" @onclick="@(_ => _localBlazoredTypeahead.Focus())">Focus</button>
+</EditForm>
+
+<hr />
+
+@if (_formModel.SelectedPerson != null)
+{
+    <br />
+    <p><strong>Selected Person:</strong> @_formModel.SelectedPerson.Firstname @_formModel.SelectedPerson.Lastname</p>
+}
+
+<hr />
+
+<h1>Blazored Typeahead - Standalone</h1>
+
+
+<BlazoredTypeahead SearchMethod="GetPeopleLocal"
+                   @bind-Value="_selectedPerson"
+                   placeholder="Search by first name...">
+    <SelectedTemplate Context="person">
+        @person.Firstname
+    </SelectedTemplate>
+    <ResultTemplate Context="person">
+        @person.Firstname @person.Lastname
+    </ResultTemplate>
+</BlazoredTypeahead>
+
+<hr />
+
+@if (_selectedPerson != null)
+{
+    <p>Selected: @_selectedPerson.Firstname @_selectedPerson.Lastname</p>
+}
+
+<hr />
+
+<h1>Blazored Typeahead - Disabled</h1>
+
+<BlazoredTypeahead SearchMethod="@GetPeopleLocal"
+                   @bind-Value="@_selectedPerson"
+                   Disabled="_isDisabled"
+                   placeholder="Search by first name...">
+    <SelectedTemplate Context="person">
+        @person.Firstname
+    </SelectedTemplate>
+    <ResultTemplate Context="person">
+        @person.Firstname @person.Lastname
+    </ResultTemplate>
+</BlazoredTypeahead>
+
+<button class="btn btn-primary" style="margin-top: 20px;" @onclick="@(() => _isDisabled = !_isDisabled)">@(_isDisabled ? "Enable" : "Disable")</button>
+
+<hr />
+
+<h1>Blazored Typeahead - Disabled (Null Value)</h1>
+
+<BlazoredTypeahead SearchMethod="@GetPeopleLocal"
+                   @bind-Value="@_selectedPersonNull"
+                   Disabled="_isDisabled"
+                   placeholder="Search by first name...">
+    <SelectedTemplate Context="person">
+        @person.Firstname
+    </SelectedTemplate>
+    <ResultTemplate Context="person">
+        @person.Firstname @person.Lastname
+    </ResultTemplate>
+</BlazoredTypeahead>
+
+<button class="btn btn-primary" style="margin-top: 20px;" @onclick="@(() => _isDisabled = !_isDisabled)">@(_isDisabled ? "Enable" : "Disable")</button>
+
+<hr />
+
+<h1>Blazored Typeahead - Binding to different type</h1>
+
+<BlazoredTypeahead SearchMethod="GetPeopleLocal"
+                   ConvertMethod="ConvertPerson"
+                   @bind-Value="_selectedPersonId"
+                   placeholder="Search by first name...">
+    <SelectedTemplate Context="personId">
+        @{
+            var selectedPerson = LoadSelectedPerson(personId);
+
+            <text>@selectedPerson?.Firstname @selectedPerson?.Lastname</text>
+        }
+    </SelectedTemplate>
+    <ResultTemplate Context="person">
+        @person.Firstname @person.Lastname (Id: @person.Id)
+    </ResultTemplate>
+</BlazoredTypeahead>
+
+<hr />
+
+@if (_selectedPersonId is > 0)
+{
+    <p>Selected Person Id: @_selectedPersonId</p>
+}
+
+<hr />
+
+<h1>Blazored Typeahead - Multi-select</h1>
+
+<BlazoredTypeahead SearchMethod="GetPeopleLocal"
+                   @bind-Values="_selectedPeople"
+                   Disabled="_isDisabledMulti"
+                   EnableDropDown="true"
+                   placeholder="Search by first name...">
+    <SelectedTemplate Context="person">
+        @person.Firstname
+    </SelectedTemplate>
+    <ResultTemplate Context="person">
+        @person.Firstname @person.Lastname (Id: @person.Id)
+    </ResultTemplate>
+</BlazoredTypeahead>
+
+<button class="btn btn-primary" style="margin-top: 20px;" @onclick="@(() => _isDisabledMulti = !_isDisabledMulti)">@(_isDisabledMulti ? "Enable" : "Disable")</button>
+
+<hr />
+
+@if (_selectedPeople != null)
+{
+    <p>Selected People:</p>
+    foreach (var person in _selectedPeople)
+    {
+        <p>@person.Firstname @person.Lastname</p>
+    }
+    <hr />
+}
+
+<h1>Blazored Typeahead - Multi-select - Adding items on empty search result</h1>
+
+<BlazoredTypeahead SearchMethod="GetPeopleLocal"
+                   @bind-Values="_selectedPeopleWithNotFoundTemplate"
+                   Disabled="_isDisabledMulti"
+                   EnableDropDown="true"
+                   MinimumLength="2"
+                   AddItemOnEmptyResultMethod="ItemAddedMethod"
+                   placeholder="Search by first name...">
+    <SelectedTemplate Context="person">
+        @person.Firstname
+    </SelectedTemplate>
+    <HelpTemplate>
+        Please enter a minimum of 2 characters to perform a search.
+    </HelpTemplate>
+    <NotFoundTemplate Context="searchText">
+        Add "@searchText" as a new user <br />
+        The newly added user will be selected after being added.
+    </NotFoundTemplate>
+    <ResultTemplate Context="person">
+        @person.Firstname @person.Lastname (Id: @person.Id)
+    </ResultTemplate>
+</BlazoredTypeahead>
+<button class="btn btn-primary" style="margin-top: 20px;" @onclick="@(() => _isDisabledMulti = !_isDisabledMulti)">@(_isDisabledMulti ? "Enable" : "Disable")</button>
+<hr />
+
+@if (_selectedPeopleWithNotFoundTemplate != null)
+{
+    <p>Selected People:</p>
+    foreach (var person in _selectedPeopleWithNotFoundTemplate)
+    {
+        <p>@person.Firstname @person.Lastname</p>
+    }
+    <hr />
+}
+
+<h1>Blazored Typeahead - Header and footer templates</h1>
+
+<BlazoredTypeahead SearchMethod="GetPeopleLocal"
+                   @bind-Value="_selectedPerson"
+                   placeholder="Search by first name...">
+    <SelectedTemplate Context="person">
+        @person.Firstname
+    </SelectedTemplate>
+    <HeaderTemplate>
+        Header template
+    </HeaderTemplate>
+    <ResultTemplate Context="person">
+        @person.Firstname @person.Lastname
+    </ResultTemplate>
+    <FooterTemplate>
+        Footer template
+    </FooterTemplate>
+</BlazoredTypeahead>
+
+<hr />
+
+@if (_selectedPersonId is > 0)
+{
+    <p>Selected Person Id: @_selectedPersonId</p>
+}
+
+@code {
+
+    private bool _isDisabled = true;
+    private bool _isDisabledMulti;
+
+    private readonly List<Person> _people = new();
+
+    private Person? _selectedPerson;
+    private Person? _selectedPersonNull;
+    private int? _selectedPersonId;
+    private IList<Person>? _selectedPeople;
+    private IList<Person>? _selectedPeopleWithNotFoundTemplate;
+    private readonly FormExample _formModel = new();
+    private BlazoredTypeahead<Person, Person> _localBlazoredTypeahead = default!;
+
+    protected override void OnInitialized()
+    {
+        _people.AddRange(new List<Person>
+        {
+            new() { Id = 1, Firstname = "Martelle", Lastname = "Cullon" },
+            new() { Id = 2, Firstname = "Zelda", Lastname = "Abrahamsson" },
+            new() { Id = 3, Firstname = "Benedetta", Lastname = "Posse" },
+            new() { Id = 4, Firstname = "Benoite", Lastname = "Gobel" },
+            new() { Id = 5, Firstname = "Charlot", Lastname = "Fullicks" },
+            new() { Id = 6, Firstname = "Vinson", Lastname = "Turbat" },
+            new() { Id = 7, Firstname = "Lenore", Lastname = "Malam" },
+            new() { Id = 8, Firstname = "Emanuele", Lastname = "Kolakovic" },
+            new() { Id = 9, Firstname = "Rosalyn", Lastname = "Mackin" },
+            new() { Id = 10, Firstname = "Yanaton", Lastname = "Krishtopaittis" },
+            new() { Id = 11, Firstname = "Frederik", Lastname = "McGeachie" },
+            new() { Id = 12, Firstname = "Parrnell", Lastname = "Ramsby" },
+            new() { Id = 13, Firstname = "Coreen", Lastname = "McGann" },
+            new() { Id = 14, Firstname = "Kyle", Lastname = "Coster" },
+            new() { Id = 15, Firstname = "Evangelia", Lastname = "Bowker" },
+            new() { Id = 16, Firstname = "Angeli", Lastname = "Collihole" },
+            new() { Id = 17, Firstname = "Bill", Lastname = "Lawther" },
+            new() { Id = 18, Firstname = "Kore", Lastname = "Reide" },
+            new() { Id = 19, Firstname = "Tracy", Lastname = "Gwinnell" },
+            new() { Id = 20, Firstname = "Lazaro", Lastname = "Partington" },
+            new() { Id = 21, Firstname = "Doretta", Lastname = "Aingell" },
+            new() { Id = 22, Firstname = "Olvan", Lastname = "Andraud" },
+            new() { Id = 23, Firstname = "Templeton", Lastname = "Chetwynd" },
+            new() { Id = 24, Firstname = "Daile", Lastname = "Kelsow" },
+            new() { Id = 25, Firstname = "Marcie", Lastname = "Brearty" },
+            new() { Id = 26, Firstname = "Irwinn", Lastname = "Lilian" },
+            new() { Id = 27, Firstname = "Niki", Lastname = "Moreland" },
+            new() { Id = 28, Firstname = "Honey", Lastname = "Waddup" },
+            new() { Id = 29, Firstname = "Amber", Lastname = "Hoopper" },
+            new() { Id = 30, Firstname = "Delilah", Lastname = "Dougary" },
+            new() { Id = 31, Firstname = "Tory", Lastname = "Ovington" },
+            new() { Id = 32, Firstname = "Doralin", Lastname = "Conrard" },
+            new() { Id = 33, Firstname = "Eugene", Lastname = "Custard" },
+            new() { Id = 34, Firstname = "Corella", Lastname = "Peotz" },
+            new() { Id = 35, Firstname = "Chris", Lastname = "Rayne" },
+            new() { Id = 36, Firstname = "Alexandro", Lastname = "Kwietek" },
+            new() { Id = 37, Firstname = "Selie", Lastname = "Tenwick" },
+            new() { Id = 38, Firstname = "Corliss", Lastname = "Haensel" },
+            new() { Id = 39, Firstname = "Misti", Lastname = "Jikylls" },
+            new() { Id = 40, Firstname = "Rosaline", Lastname = "Jephson" },
+            new() { Id = 41, Firstname = "Irene", Lastname = "Farnsworth" },
+            new() { Id = 42, Firstname = "Dominique", Lastname = "O'Shiels" },
+            new() { Id = 43, Firstname = "Mellie", Lastname = "Cyson" },
+            new() { Id = 44, Firstname = "Madelena", Lastname = "Chin" },
+            new() { Id = 45, Firstname = "Charlotte", Lastname = "Clixby" },
+            new() { Id = 46, Firstname = "Samara", Lastname = "Shavel" },
+            new() { Id = 47, Firstname = "Brod", Lastname = "Kitt" },
+            new() { Id = 48, Firstname = "Maridel", Lastname = "Dalley" },
+            new() { Id = 49, Firstname = "Wini", Lastname = "Hundley" },
+        });
+
+        _selectedPerson = new Person(12, "Charles", "The Great", 66, "Belgium");
+    }
+
+    private async Task<IEnumerable<Person>> GetPeopleLocal(string searchText)
+        => await Task.FromResult(_people.Where(x => x.Firstname.ToLower().Contains(searchText.ToLower())).ToList());
+
+    private static void HandleFormSubmit()
+        => Console.WriteLine("Form Submitted Successfully!");
+
+    private static int? ConvertPerson(Person? person)
+        => person?.Id;
+
+    private Person? LoadSelectedPerson(int? id)
+        => _people.FirstOrDefault(p => p.Id == id);
+
+    private readonly Random _random = new();
+    private Task<Person> ItemAddedMethod(string searchText)
+    {
+        var randomPerson = _people[_random.Next(_people.Count - 1)];
+        var newPerson = new Person(_random.Next(1000, int.MaxValue), searchText, randomPerson.Lastname, _random.Next(10, 70), randomPerson.Location);
+        _people.Add(newPerson);
+        return Task.FromResult(newPerson);
+    }
+}
