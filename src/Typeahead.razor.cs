@@ -20,44 +20,67 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     [Inject] private IJSRuntime? JSRuntime { get; set; }
 
     [CascadingParameter] private EditContext? CascadedEditContext { get; set; }
-
-    [Parameter] public TValue? Value { get; set; }
-    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
-    [Parameter] public Expression<Func<TValue>>? ValueExpression { get; set; }
-
-    [Parameter] public IList<TValue>? Values { get; set; }
-    [Parameter] public EventCallback<IList<TValue>> ValuesChanged { get; set; }
-    [Parameter] public Expression<Func<IList<TValue>>>? ValuesExpression { get; set; }
-
-    [Parameter] public Func<string, Task<IEnumerable<TItem>>>? SearchMethod { get; set; }
-    [Parameter] public Func<TItem, TValue>? ConvertMethod { get; set; }
-    [Parameter] public Func<string, Task<TItem>>? AddItemOnEmptyResultMethod { get; set; }
-
-    [Parameter] public RenderFragment<string>? NotFoundTemplate { get; set; }
-    [Parameter] public RenderFragment? HelpTemplate { get; set; }
-    [Parameter] public RenderFragment<TItem>? ResultTemplate { get; set; }
-    [Parameter] public RenderFragment<TValue>? SelectedTemplate { get; set; }
-    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
-    [Parameter] public RenderFragment? FooterTemplate { get; set; }
-
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
-    [Parameter] public int MinimumLength { get; set; } = 1;
-    [Parameter] public int Debounce { get; set; } = 300;
-    [Parameter] public int MaximumSuggestions { get; set; } = 8;
-    [Parameter] public bool Disabled { get; set; } = false;
-    [Parameter] public bool EnableDropDown { get; set; } = false;
-    [Parameter] public bool ShowDropDownOnFocus { get; set; } = false;
+
+    /// <summary>
+    /// DisableClear is used to disable the clear button in the typeahead input field.
+    /// </summary>
     [Parameter] public bool DisableClear { get; set; } = false;
 
-    [Parameter] public bool StopPropagation { get; set; } = false;
+    /// <summary>
+    /// Disabled is used to disable the typeahead input field.
+    /// </summary>
+    [Parameter] public bool Disabled { get; set; } = false;
+
+    /// <summary>
+    /// EnableDropDown is used to enable the dropdown functionality of the typeahead input field.
+    /// </summary>
+    [Parameter] public bool EnableDropDown { get; set; } = false;
     [Parameter] public bool PreventDefault { get; set; } = false;
+    [Parameter] public bool ShowDropDownOnFocus { get; set; } = false;
+    [Parameter] public bool StopPropagation { get; set; } = false;
+    [Parameter] public EventCallback<IList<TValue>> ValuesChanged { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<IList<TValue>>>? ValuesExpression { get; set; }
+    [Parameter] public Expression<Func<TValue>>? ValueExpression { get; set; }
+
+    /// <summary>
+    /// Method to search for items based on the input text.
+    /// </summary>
+    [Parameter] public Func<string, Task<IEnumerable<TItem>>>? SearchMethod { get; set; }
+    [Parameter] public Func<string, Task<TItem>>? AddItemOnEmptyResultMethod { get; set; }
+    [Parameter] public Func<TItem, TValue>? ConvertMethod { get; set; }
+    [Parameter] public IList<TValue>? Values { get; set; }
+
+    /// <summary>
+    /// Debounce is used to delay the search operation after the user stops typing.
+    /// </summary>
+    [Parameter] public int Debounce { get; set; } = 300;
+
+    /// <summary>
+    /// MaximumSuggestions is used to limit the number of suggestions shown in the dropdown.
+    /// </summary>
+    [Parameter] public int MaximumSuggestions { get; set; } = 8;
+
+    /// <summary>
+    /// Sets MinimumLength is used to determine when to start searching for suggestions.
+    /// </summary>
+    [Parameter] public int MinimumLength { get; set; } = 1;
+    [Parameter] public RenderFragment? FooterTemplate { get; set; }
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment? HelpTemplate { get; set; }
+    [Parameter] public RenderFragment<string>? NotFoundTemplate { get; set; }
+    [Parameter] public RenderFragment<TItem>? ResultTemplate { get; set; }
+    [Parameter] public RenderFragment<TValue>? SelectedTemplate { get; set; }
+    [Parameter] public TValue? Value { get; set; }
 
     private bool IsSearching { get; set; } = false;
-    private bool IsShowingSuggestions { get; set; } = false;
     private bool IsShowingMask { get; set; } = false;
-    private TItem[] Suggestions { get; set; } = [];
-    private int SelectedIndex { get; set; }
+    private bool IsShowingSuggestions { get; set; } = false;
     private bool ShowHelpTemplate { get; set; } = false;
+    private int SelectedIndex { get; set; }
+    private TItem[] Suggestions { get; set; } = [];
+
     private string SearchText
     {
         get => _searchText;
@@ -77,7 +100,6 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             }
         }
     }
-
     private string FieldCssClasses => _editContext?.FieldCssClass(_fieldIdentifier) ?? "";
     private bool IsMultiselect => ValuesExpression != null;
 
@@ -235,6 +257,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             SearchText = args.Key;
         }
     }
+
     private async Task HandleKeydown(KeyboardEventArgs args)
     {
         if (args.Key == "Tab")
@@ -333,7 +356,9 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             IsSearching = true;
             await InvokeAsync(StateHasChanged);
 
-            Suggestions = (await SearchMethod?.Invoke(_searchText)).Take(MaximumSuggestions).ToArray();
+            Suggestions = (await SearchMethod?.Invoke(_searchText)!)
+                .Take(MaximumSuggestions)
+                .ToArray();
 
             IsSearching = false;
             await InvokeAsync(StateHasChanged);
@@ -347,17 +372,17 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
 
     private string GetSelectedSuggestionClass(TItem item, int index)
     {
-        const string resultClass = "blazored-typeahead__active-item";
-        TValue value = ConvertMethod(item);
+        const string resultClass = "blazored-typeahead-active-item";
+        TValue value = ConvertMethod!(item);
 
         if (Equals(value, Value) || (Values?.Contains(value) ?? false))
         {
             if (index == SelectedIndex)
             {
-                return "blazored-typeahead__selected-item-highlighted active";
+                return "typeahead-selected-item-highlighted active";
             }
 
-            return "blazored-typeahead__selected-item";
+            return "typeahead-selected-item";
         }
 
         if (index == SelectedIndex)
@@ -370,7 +395,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
 
     private string GetSelectedSuggestionClass(int index)
     {
-        const string resultClass = "blazored-typeahead__active-item";
+        const string resultClass = "typeahead-active-item";
 
         return index == SelectedIndex ? resultClass : string.Empty;
     }
@@ -433,7 +458,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         try
         {
             // Potentially dangerous code
-            var item = await AddItemOnEmptyResultMethod(SearchText);
+            var item = await AddItemOnEmptyResultMethod!(SearchText);
             await SelectResult(item);
         }
         catch (Exception e)
@@ -478,7 +503,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         return SelectResult(Suggestions[SelectedIndex]);
     }
 
-    private bool IsSearchingOrDebouncing => IsSearching || _debounceTimer.Enabled;
+    private bool IsSearchingOrDebouncing => IsSearching || _debounceTimer!.Enabled;
     private bool ShowNotFound()
     {
         return IsShowingSuggestions &&
@@ -496,7 +521,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     {
         if (disposing)
         {
-            _debounceTimer.Dispose();
+            _debounceTimer!.Dispose();
         }
     }
 

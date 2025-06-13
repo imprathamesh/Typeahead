@@ -7,5 +7,5 @@ namespace Sample.Shared
         [Required]
         public Person SelectedPerson { get; set; }
     }
-    
+
 }

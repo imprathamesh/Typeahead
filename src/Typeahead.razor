@@ -3,19 +3,19 @@
 @typeparam TItem
 @typeparam TValue
 
-<div class="blazored-typeahead @FieldCssClasses">
-    <div class="blazored-typeahead__controls">
+<div class="typeahead @FieldCssClasses">
+    <div class="typeahead-controls">
         @if (Disabled)
         {
-            <div class="blazored-typeahead__input-mask-wrapper blazored-typeahead__input-mask-wrapper--disabled">
+            <div class="typeahead-input-mask-wrapper typeahead-input-mask-wrapper-disabled">
                 @if (IsMultiselect)
                 {
                     @if (Values != null)
                     {
                         @foreach (var value in Values)
                         {
-                            <div class="blazored-typeahead__multi-value">
-                                <div class="blazored-typeahead__multi-value-label">
+                            <div class="typeahead-multi-value">
+                                <div class="typeahead-multi-value-label">
                                     @SelectedTemplate(value)
                                 </div>
                             </div>
@@ -26,7 +26,7 @@
                 {
                     if (Value != null)
                     {
-                        <div class="blazored-typeahead__input-mask" tabindex="0">
+                        <div class="typeahead-input-mask" tabindex="0">
                             @SelectedTemplate(Value)
                         </div>
                     }
@@ -35,8 +35,8 @@
 
             @if (EnableDropDown)
             {
-                <div class="blazored-typeahead__input-icon blazored-typeahead__input-icon--disabled">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="blazored-typeahead__down-arrow">
+                <div class="typeahead-input-icon typeahead-input-icon-disabled">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="typeahead-down-arrow">
                         <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                             <polygon id="Shape" points="0 0 24 0 24 24 0 24" />
                             <path d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z" id="Path-94" fill-rule="nonzero" transform="translate(12.000003, 11.999999) rotate(-180.000000) translate(-12.000003, -11.999999) " />
@@ -49,17 +49,17 @@
         {
             @if (IsMultiselect)
             {
-                <div class="blazored-typeahead__input-multiselect-wrapper">
+                <div class="typeahead-input-multiselect-wrapper">
                     @if (Values != null)
                     {
                         @foreach (var value in Values)
                         {
-                            <div class="blazored-typeahead__multi-value">
-                                <div class="blazored-typeahead__multi-value-label">
+                            <div class="typeahead-multi-value">
+                                <div class="typeahead-multi-value-label">
                                     @SelectedTemplate(value)
                                 </div>
                                 <button type="button"
-                                        class="blazored-typeahead__multi-value-clear"
+                                        class="typeahead-multi-value-clear"
                                         title="Remove Item"
                                         tabindex="-1"
                                         @onclick="@(() => RemoveValue(value))">
@@ -83,7 +83,7 @@
                                @attributes="AdditionalAttributes"
                                type="text"
                                id="txtSearch"
-                               class="blazored-typeahead__input blazored-typeahead__input-multi form-control" />  <label for="txtSearch">Search</label>
+                               class="typeahead-input typeahead-input-multi form-control" />  <label for="txtSearch">Search</label>
                     </div>
                 </div>
             }
@@ -91,10 +91,10 @@
             {
                 if (IsShowingMask)
                 {
-                    <div class="blazored-typeahead__input-mask-wrapper">
-                        <div class="blazored-typeahead__input-mask" @onclick="HandleClickOnMask" @onkeyup="HandleKeyUpOnMask" tabindex="0" @ref="_mask">
+                    <div class="typeahead-input-mask-wrapper">
+                        <div class="typeahead-input-mask" @onclick="HandleClickOnMask" @onkeyup="HandleKeyUpOnMask" tabindex="0" @ref="_mask">
                             <div>
-                                <label class="blazored-typeahead__input-mask-label text-muted text-sm">Search</label>
+                                <label class="typeahead-input-mask-label text-muted text-sm">Search</label>
                             </div>
                             <div>
                                 @SelectedTemplate(Value)
@@ -103,13 +103,13 @@
 
                         @if (!DisableClear)
                         {
-                            <div class="blazored-typeahead__clear" @onclick="HandleClear" tabindex="-1">
+                            <div class="typeahead-clear" @onclick="HandleClear" tabindex="-1">
                                 &#10005;
                             </div>
                         }
                     </div>
                 }
-                <div class="form-floating @(IsShowingMask ? "blazored-typeahead__input-hidden" : null)">
+                <div class="form-floating @(IsShowingMask ? "typeahead-input-hidden" : null)">
                     <input @ref="_searchInput"
                            @bind-value="SearchText"
                            @bind-value:event="oninput"
@@ -121,7 +121,7 @@
                            @attributes="AdditionalAttributes"
                            type="text"
                            id="txtSearch"
-                           class="blazored-typeahead__input form-control " />
+                           class="typeahead-input form-control " />
                     <label for="txtSearch">Search</label>
                 </div>
             }
@@ -129,7 +129,7 @@
 
         @if (IsSearching)
         {
-            @* <div class="blazored-typeahead__loader"></div> *@
+            @* <div class="typeahead-loader"></div> *@
             <div class="spinner-border spinner-border-sm" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
@@ -137,8 +137,8 @@
 
         @if (!Disabled && EnableDropDown)
         {
-            <div class="blazored-typeahead__input-icon" @onclick="ShowMaximumSuggestions" @onkeyup="HandleKeyUpOnShowDropDown" tabindex="@(IsShowingSuggestions ? "-1" : "0")">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="blazored-typeahead__down-arrow">
+            <div class="typeahead-input-icon" @onclick="ShowMaximumSuggestions" @onkeyup="HandleKeyUpOnShowDropDown" tabindex="@(IsShowingSuggestions ? "-1" : "0")">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="typeahead-down-arrow">
                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                         <polygon id="Shape" points="0 0 24 0 24 24 0 24" />
                         <path d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z" id="Path-94" fill-rule="nonzero" transform="translate(12.000003, 11.999999) rotate(-180.000000) translate(-12.000003, -11.999999) " />
@@ -150,18 +150,18 @@
 
     @if (ShouldShowHelpTemplate())
     {
-        <div class="blazored-typeahead__results dropdown-menu">
-            <div class="blazored-typeahead__results-help-template dropdown-item">
+        <div class="typeahead-results dropdown-menu">
+            <div class="typeahead-results-help-template dropdown-item">
                 @HelpTemplate
             </div>
         </div>
     }
     else if (ShouldShowSuggestions())
     {
-        <div class="blazored-typeahead__results dropdown-menu">
+        <div class="typeahead-results dropdown-menu">
             @if (HeaderTemplate != null)
             {
-                <div class="blazored-typeahead__results-header dropdown-item">
+                <div class="typeahead-results-header dropdown-item">
                     @HeaderTemplate
                 </div>
             }
@@ -171,7 +171,7 @@
                 var item = Suggestions[i];
 
                 <div @key="item"
-                     class="blazored-typeahead__result dropdown-item @GetSelectedSuggestionClass(item, i)"
+                     class="typeahead-result dropdown-item @GetSelectedSuggestionClass(item, i)"
                      @onclick="@(_ => SelectResult(item))">
                     @ResultTemplate(item)
                 </div>
@@ -179,7 +179,7 @@
 
             @if (FooterTemplate != null)
             {
-                <div class="blazored-typeahead__results-footer dropdown-item">
+                <div class="typeahead-results-footer dropdown-item">
                     @FooterTemplate
                 </div>
             }
@@ -187,10 +187,10 @@
     }
     else if (ShowNotFound())
     {
-        <div class="blazored-typeahead__results dropdown-menu">
+        <div class="typeahead-results dropdown-menu">
             @if (HeaderTemplate != null)
             {
-                <div class="blazored-typeahead__results-header dropdown-item">
+                <div class="typeahead-results-header dropdown-item">
                     @HeaderTemplate
                 </div>
             }
@@ -199,28 +199,28 @@
             {
                 @if (AddItemOnEmptyResultMethod != null)
                 {
-                    <div class="blazored-typeahead__result dropdown-item @GetSelectedSuggestionClass(0)"
+                    <div class="typeahead-result dropdown-item @GetSelectedSuggestionClass(0)"
                          @onclick="@SelectNotFoundPlaceholder">
                         @NotFoundTemplate(SearchText)
                     </div>
                 }
                 else
                 {
-                    <div class="blazored-typeahead__notfound">
+                    <div class="typeahead-notfound">
                         @NotFoundTemplate(SearchText)
                     </div>
                 }
             }
             else
             {
-                <div class="blazored-typeahead__notfound  dropdown-item">
+                <div class="typeahead-notfound  dropdown-item">
                     No Results Found
                 </div>
             }
 
             @if (FooterTemplate != null)
             {
-                <div class="blazored-typeahead__results-footer dropdown-item">
+                <div class="typeahead-results-footer dropdown-item">
                     @FooterTemplate
                 </div>
             }
