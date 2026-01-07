@@ -1,14 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <PackageOutputPath>D:\Publish\LibraryProjects</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.22" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.22" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\typeahead.js" />
+  </ItemGroup>
+	<PropertyGroup>
+		<Title>Typeahead Component</Title>
+		<Description>Typeahead Component</Description>
+		<Copyright>Innovus</Copyright>		 
+		<PackageTags>Typeahead Component</PackageTags>
+		<PackageVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd"))</PackageVersion>
+		<AssemblyVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd"))</AssemblyVersion>
+		<FileVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd"))</FileVersion>
+		<Version>$([System.DateTime]::Now.ToString("yyyy.MM.dd"))</Version>
+	</PropertyGroup>
 </Project>

@@ -70,7 +70,7 @@
                             </div>
                         }
                     }
-                    <div class="form-floating">
+                    <div class="form-floating flex-grow-1">
                         <input @ref="_searchInput"
                                @bind-value="SearchText"
                                @bind-value:event="oninput"
@@ -121,8 +121,9 @@
                            @attributes="AdditionalAttributes"
                            type="text"
                            id="txtSearch"
+                           placeHolder="@PlaceHolder"
                            class="typeahead-input form-control " />
-                    <label for="txtSearch">Search</label>
+                    <label for="txtSearch">@Label</label>
                 </div>
             }
         }

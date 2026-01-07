@@ -65,13 +65,15 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     /// <summary>
     /// Sets MinimumLength is used to determine when to start searching for suggestions.
     /// </summary>
-    [Parameter] public int MinimumLength { get; set; } = 1;
+    [Parameter] public int MinimumLength { get; set; } = 3;
     [Parameter] public RenderFragment? FooterTemplate { get; set; }
     [Parameter] public RenderFragment? HeaderTemplate { get; set; }
     [Parameter] public RenderFragment? HelpTemplate { get; set; }
     [Parameter] public RenderFragment<string>? NotFoundTemplate { get; set; }
     [Parameter] public RenderFragment<TItem>? ResultTemplate { get; set; }
     [Parameter] public RenderFragment<TValue>? SelectedTemplate { get; set; }
+    [Parameter] public string? Label { get; set; } = "Search";
+    [Parameter] public string? PlaceHolder { get; set; } = "Search";
     [Parameter] public TValue? Value { get; set; }
 
     private bool IsSearching { get; set; } = false;

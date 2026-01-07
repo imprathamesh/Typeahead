@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 var onOutsideClickFunctions = {};
 
@@ -58,7 +58,7 @@ window.Typeahead = {
 
         Typeahead.onOutsideClickClear(searchTextElement); //clean up just in case
 
-        var func = function(e) {
+        var func = function (e) {
             var parent = e.target;
             while (parent != null) {
                 if (parent.classList != null && parent.classList.contains('typeahead')) {
